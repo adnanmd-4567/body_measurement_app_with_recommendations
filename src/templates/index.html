@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitFinder AI - Body Measurement Estimator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #4361ee;
+            --primary-light-blue: #4895ef;
+            --primary-teal: #4cc9f0;
+            --primary-green: #3dd5b0;
+            --primary-dark: #3a0ca3;
+            --text-dark: #2b2d42;
+            --text-light: #8d99ae;
+            --background: #f0f4f8;
+            --white: #ffffff;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --error: #e74c3c;
+            --border-radius: 12px;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--background);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .logo-icon {
+            color: var(--primary-blue);
+            margin-right: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-blue);
+        }
+        
+        .nav-link.active {
+            color: var(--primary-blue);
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .hero-title .blue {
+            color: var(--primary-blue);
+        }
+        
+        .hero-title .green {
+            color: var(--primary-green);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            outline: none;
+            text-decoration: none;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-green);
+            color: var(--white);
+            box-shadow: 0 4px 14px rgba(61, 213, 176, 0.4);
+        }
+        
+        .btn-primary:hover {
+            background-color: #35c0a0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(61, 213, 176, 0.6);
+        }
+        
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+        
+        /* How It Works Section */
+        .how-it-works {
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 3rem;
+        }
+        
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .step-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .step-icon {
+            font-size: 2rem;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+        }
+        
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .step-description {
+            color: var(--text-light);
+            font-size: 1rem;
+            flex-grow: 1;
+        }
+        
+        /* Measurement Section */
+        .measurement-section {
+            padding: 3rem 0 5rem;
+        }
+        
+        .upload-container {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--primary-light-blue);
+            border-radius: var(--border-radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: var(--gray-100);
+        }
+        
+        .upload-area:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .upload-area.highlight {
+            background-color: rgba(67, 97, 238, 0.1);
+            border-color: var(--primary-blue);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        
+        .upload-text {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .camera-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+        
+        .camera-view {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .camera-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            width: 100%;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(67, 97, 238, 0.1);
+            border-radius: 50%;
+            border-left-color: var(--primary-blue);
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        
+        .error-message {
+            color: var(--error);
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            background-color: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            display: none;
+        }
+        
+        .results-container {
+            display: none;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .image-preview {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+        
+        .preview-image-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--gray-100);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .preview-image-container img {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+        }
+        
+        .measurements {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .measurements-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+        
+        .measurement-list {
+            margin-bottom: 2rem;
+        }
+        
+        .measurement-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .measurement-label {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .measurement-value {
+            font-weight: 600;
+            color: var(--primary-dark);
+            background-color: rgba(67, 97, 238, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+        }
+        
+        .size-recommendations {
+            margin-top: 1.5rem;
+        }
+        
+        .size-item {
+            background: linear-gradient(135deg, var(--primary-light-blue), var(--primary-blue));
+            color: var(--white);
+            padding: 1rem;
+            margin-top: 0.75rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+            transition: var(--transition);
+        }
+        
+        .size-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(67, 97, 238, 0.4);
+        }
+        
+        /* Clothing Recommendations Section */
+        .recommendations-container {
+            display: none;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            margin-top: 2rem;
+        }
+        
+        .recommendations-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .recommendations-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+        
+        .recommendations-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .category-tab {
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .category-tab:hover {
+            color: var(--primary-blue);
+        }
+        
+        .category-tab.active {
+            color: var(--primary-blue);
+        }
+        
+        .category-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-light-blue), var(--primary-blue));
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .product-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .product-image-container {
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--gray-100);
+            padding: 1rem;
+        }
+        
+        .product-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .product-info {
+            padding: 1rem;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+        
+        .product-price {
+            color: var(--primary-dark);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-size {
+            display: inline-block;
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-blue);
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+        
+        .product-actions {
+            padding: 1rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .product-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 50px;
+        }
+        
+        .view-more-btn {
+            display: block;
+            margin: 2rem auto 0;
+            padding: 0.75rem 2rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--white);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-text {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .footer-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .footer-link:hover {
+            color: var(--primary-blue);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .image-preview {
+                margin-bottom: 2rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+            
+            .category-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 0.5rem;
+            }
+            
+            .category-tab {
+                padding: 0.75rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <span class="logo-icon"></span>
+                FitFinder AI
+            </a>
+            <nav class="nav-links">
+                <a href="#" class="nav-link active">
+                    <span class="nav-icon">🏠</span>
+                    Home
+                </a>
+                <a href="#analyze" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Analyze
+                </a>
+            </nav>
+        </div>
+    </header>
+    
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">Discover Your <span class="blue">True</span> <span class="green">Fit.</span></h1>
+            <p class="hero-subtitle">Upload a photo, and let our AI instantly analyze your body measurements and provide insights into your unique body shape.</p>
+            <a href="#analyze" class="btn btn-primary">
+                Get Started Now
+                <span class="btn-icon">→</span>
+            </a>
+        </div>
+    </section>
+    
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-icon">📷</div>
+                    <h3 class="step-title">Upload Your Photo</h3>
+                    <p class="step-description">Simply upload a clear, full-body photo. Our AI respects your privacy; images are processed securely.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">📏</div>
+                    <h3 class="step-title">AI Measurement</h3>
+                    <p class="step-description">Advanced algorithms estimate key body measurements like height, shoulder width, chest, waist, and hips in seconds.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">👕</div>
+                    <h3 class="step-title">Body Shape Insights</h3>
+                    <p class="step-description">Understand your body shape with our analysis, and get personalized styling tips to help you look and feel your best.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="analyze" class="measurement-section">
+        <div class="container">
+            <div class="upload-container">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📷</div>
+                    <p class="upload-text">Drag & drop your full body image here or use one of the options below</p>
+                    <input type="file" id="fileInput" class="file-input" accept="image/png, image/jpeg">
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="uploadBtn">
+                            <span class="btn-icon">📁</span>
+                            Select Image
+                        </button>
+                        <button class="btn btn-primary" id="cameraBtn" style="background-color: var(--primary-blue);">
+                            <span class="btn-icon">📸</span>
+                            Take Photo
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="camera-container" id="cameraContainer">
+                    <video id="cameraView" class="camera-view" autoplay playsinline></video>
+                    <canvas id="cameraCanvas" style="display: none;"></canvas>
+                    <div class="camera-controls">
+                        <button class="btn btn-primary" id="captureBtn">
+                            <span class="btn-icon">📸</span>
+                            Capture Photo
+                        </button>
+                        <button class="btn btn-primary" id="cancelCameraBtn" style="background-color: var(--text-light);">
+                            <span class="btn-icon">✖️</span>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Processing your image, please wait...</p>
+                </div>
+                
+                <div class="error-message" id="errorMessage"></div>
+            </div>
+            
+            <div class="results-container" id="resultsContainer">
+                <div class="results-grid">
+                    <div class="image-preview">
+                        <h3 class="preview-title">Your Image</h3>
+                        <div class="preview-image-container">
+                            <img id="imagePreview" src="" alt="Preview">
+                        </div>
+                    </div>
+                    
+                    <div class="measurements">
+                        <h3 class="measurements-title">Estimated Measurements</h3>
+                        <div class="measurement-list">
+                            <div class="measurement-item">
+                                <span class="measurement-label">Height:</span>
+                                <span class="measurement-value" id="heightValue">-</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Shoulder Width:</span>
+                                <span class="measurement-value" id="shoulderValue">-</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Chest:</span>
+                                <span class="measurement-value" id="chestValue">-</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Waist:</span>
+                                <span class="measurement-value" id="waistValue">-</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Hips:</span>
+                                <span class="measurement-value" id="hipsValue">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="size-recommendations">
+                            <h3 class="measurements-title">Recommended Sizes</h3>
+                            <div class="size-item" id="shirtSize">-</div>
+                            <div class="size-item" id="pantsSize">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- New Clothing Recommendations Section -->
+            <div class="recommendations-container" id="recommendationsContainer">
+                <div class="recommendations-header">
+                    <h3 class="recommendations-title">Personalized Clothing Recommendations</h3>
+                    <p class="recommendations-subtitle">Based on your measurements, we've selected these items that would fit you perfectly.</p>
+                </div>
+                
+                <div class="category-tabs">
+                    <div class="category-tab active" data-category="all">All Items</div>
+                    <div class="category-tab" data-category="tshirts">T-Shirts</div>
+                    <div class="category-tab" data-category="shirts">Shirts</div>
+                    <div class="category-tab" data-category="hoodies">Hoodies</div>
+                    <div class="category-tab" data-category="jeans">Jeans</div>
+                </div>
+                
+                <div class="product-grid">
+                    <!-- T-Shirt Product Card -->
+                    <div class="product-card" data-category="tshirts">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/tshirt_blue.png" alt="Blue T-Shirt" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Classic Blue T-Shirt</h4>
+                            <p class="product-price">₹999</p>
+                            <span class="product-size" id="tshirtSize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="tshirts">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/tshirt_green.png" alt="Green T-Shirt" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Classic Green T-Shirt</h4>
+                            <p class="product-price">₹899</p>
+                            <span class="product-size" id="greentshirtSize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="tshirts">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/tshirt_black.png" alt="Black T-Shirt" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Classic Black T-Shirt</h4>
+                            <p class="product-price">₹899</p>
+                            <span class="product-size" id="blacktshirtSize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+
+                    <!-- Shirt Product Card -->
+                    <div class="product-card" data-category="shirts">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/shirt_white.png" alt="White Shirt" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Formal White Shirt</h4>
+                            <p class="product-price">₹1499</p>
+                            <span class="product-size" id="shirtFormalSize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="shirts">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/shirt_blue.png" alt="Blue Shirt" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Formal Blue Shirt</h4>
+                            <p class="product-price">₹1499</p>
+                            <span class="product-size" id="blueshirtFormalSize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+                    
+                    <div class="product-card" data-category="shirts">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/shirt_striped.png" alt="Striped Shirt" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Formal Striped Shirt</h4>
+                            <p class="product-price">₹1499</p>
+                            <span class="product-size" id="stripedshirtFormalSize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+
+                    <!-- Polo Product Card -->
+                    <div class="product-card" data-category="shirts">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/polo_green.png" alt="Green Polo" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Green Polo Shirt</h4>
+                            <p class="product-price">₹1299</p>
+                            <span class="product-size" id="poloSize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+                    
+                    <!-- Hoodie Product Card -->
+                    <div class="product-card" data-category="hoodies">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/hoodie_gray.png" alt="Gray Hoodie" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Comfort Gray Hoodie</h4>
+                            <p class="product-price">₹1399</p>
+                            <span class="product-size" id="hoodieSize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="hoodies">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/hoodie_red.png" alt="Red Hoodie" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Comfort Red Hoodie</h4>
+                            <p class="product-price">₹1599</p>
+                            <span class="product-size" id="redhoodieSize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="hoodies">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/hoodie_blue.png" alt="Blue Hoodie" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Comfort Blue Hoodie</h4>
+                            <p class="product-price">₹1499</p>
+                            <span class="product-size" id="bluehoodieSize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="hoodies">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/hoodie_black.png" alt="Black Hoodie" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Comfort Black Hoodie</h4>
+                            <p class="product-price">₹1499</p>
+                            <span class="product-size" id="blackhoodieSize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+                    
+                    <!-- Jeans Product Card -->
+                    <div class="product-card" data-category="jeans">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/jeans_blue.png" alt="Blue Jeans" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Classic Blue Jeans</h4>
+                            <p class="product-price">₹1799</p>
+                            <span class="product-size" id="jeansSize">Size: 32</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="jeans">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/jeans_black.png" alt="Black Jeans" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Classic Black Jeans</h4>
+                            <p class="product-price">₹1799</p>
+                            <span class="product-size" id="blackjeansSize">Size: 32</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="jeans">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/jeans_gray.png" alt="Gray Jeans" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Classic Gray Jeans</h4>
+                            <p class="product-price">₹1599</p>
+                            <span class="product-size" id="grayjeansSize">Size: 32</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="jeans">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/jeans_light.png" alt="Light Jeans" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Classic Light Blue Jeans</h4>
+                            <p class="product-price">₹2399</p>
+                            <span class="product-size" id="lightjeansSize">Size: 32</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+                    
+                    <!-- Additional T-Shirt Product Card -->
+                    <div class="product-card" data-category="tshirts">
+                        <div class="product-image-container">
+                            <img src="/static/images/products/tshirt_blue.png" alt="Navy T-Shirt" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name">Premium Navy T-Shirt</h4>
+                            <p class="product-price">₹1199</p>
+                            <span class="product-size" id="tshirtNavySize">Size: M</span>
+                        </div>
+                        <div class="product-actions">
+                            <!-- button class="btn btn-primary product-btn">View Details</button -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- button class="btn btn-primary view-more-btn">
+                    View More Recommendations
+                    <span class="btn-icon">→</span>
+                </button -->
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container footer-content">
+            <p class="footer-text">© 2025 FitFinder AI. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const cameraBtn = document.getElementById('cameraBtn');
+            const cameraContainer = document.getElementById('cameraContainer');
+            const cameraView = document.getElementById('cameraView');
+            const cameraCanvas = document.getElementById('cameraCanvas');
+            const captureBtn = document.getElementById('captureBtn');
+            const cancelCameraBtn = document.getElementById('cancelCameraBtn');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const recommendationsContainer = document.getElementById('recommendationsContainer');
+            const imagePreview = document.getElementById('imagePreview');
+            
+            // Measurement result elements
+            const heightValue = document.getElementById('heightValue');
+            const shoulderValue = document.getElementById('shoulderValue');
+            const chestValue = document.getElementById('chestValue');
+            const waistValue = document.getElementById('waistValue');
+            const hipsValue = document.getElementById('hipsValue');
+            const shirtSize = document.getElementById('shirtSize');
+            const pantsSize = document.getElementById('pantsSize');
+            
+            // Product size elements
+            const tshirtSize = document.getElementById('tshirtSize');
+            const greentshirtSize = document.getElementById('greentshirtSize');
+            const blacktshirtSize = document.getElementById('blacktshirtSize');
+            const shirtFormalSize = document.getElementById('shirtFormalSize');
+            const blueshirtFormalSize = document.getElementById('blueshirtFormalSize');
+            const stripedshirtFormalSize = document.getElementById('stripedshirtFormalSize');
+            const poloSize = document.getElementById('poloSize');
+            const hoodieSize = document.getElementById('hoodieSize');
+            const redhoodieSize = document.getElementById('redhoodieSize');
+            const bluehoodieSize = document.getElementById('bluehoodieSize');
+            const blackhoodieSize = document.getElementById('blackhoodieSize');
+            const jeansSize = document.getElementById('jeansSize');
+            const blackjeansSize = document.getElementById('blackjeansSize');
+            const grayjeansSize = document.getElementById('grayjeansSize');
+            const lightjeansSize = document.getElementById('lightjeansSize');
+            const tshirtNavySize = document.getElementById('tshirtNavySize');
+            
+            let stream = null;
+            
+            // Category tabs functionality
+            const categoryTabs = document.querySelectorAll('.category-tab');
+            const productCards = document.querySelectorAll('.product-card');
+            
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Get category
+                    const category = this.getAttribute('data-category');
+                    
+                    // Show/hide products based on category
+                    productCards.forEach(card => {
+                        if (category === 'all' || card.getAttribute('data-category') === category) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Handle click on upload button
+            uploadBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // Handle click on camera button
+            cameraBtn.addEventListener('click', function() {
+                startCamera();
+            });
+            
+            // Handle click on capture button
+            captureBtn.addEventListener('click', function() {
+                capturePhoto();
+            });
+            
+            // Handle click on cancel camera button
+            cancelCameraBtn.addEventListener('click', function() {
+                stopCamera();
+            });
+            
+            // Handle click on upload area
+            uploadArea.addEventListener('click', function(e) {
+                // Prevent click on the upload area from triggering when clicking buttons
+                if (e.target === uploadArea || e.target.tagName !== 'BUTTON') {
+                    fileInput.click();
+                }
+            });
+            
+            // Handle drag and drop
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('highlight');
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.classList.remove('highlight');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('highlight');
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileUpload();
+                }
+            });
+            
+            // Handle file selection
+            fileInput.addEventListener('change', handleFileUpload);
+            
+            // Start camera function
+            function startCamera() {
+                // Check if browser supports getUserMedia
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    showError('Camera access is not supported by this browser');
+                    return;
+                }
+                
+                // Request camera access
+                navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment', // Prefer back camera if available
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                })
+                .then(function(mediaStream) {
+                    stream = mediaStream;
+                    cameraView.srcObject = mediaStream;
+                    uploadArea.style.display = 'none';
+                    cameraContainer.style.display = 'flex';
+                })
+                .catch(function(err) {
+                    showError('Error accessing camera: ' + err.message);
+                });
+            }
+            
+            // Stop camera function
+            function stopCamera() {
+                if (stream) {
+                    stream.getTracks().forEach(track => {
+                        track.stop();
+                    });
+                    stream = null;
+                }
+                cameraView.srcObject = null;
+                cameraContainer.style.display = 'none';
+                uploadArea.style.display = 'block';
+            }
+            
+            // Capture photo function
+            function capturePhoto() {
+                if (!stream) return;
+                
+                // Set canvas dimensions to match video
+                const width = cameraView.videoWidth;
+                const height = cameraView.videoHeight;
+                cameraCanvas.width = width;
+                cameraCanvas.height = height;
+                
+                // Draw current video frame to canvas
+                const context = cameraCanvas.getContext('2d');
+                context.drawImage(cameraView, 0, 0, width, height);
+                
+                // Convert canvas to blob
+                cameraCanvas.toBlob(function(blob) {
+                    // Create a File object from the blob
+                    const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
+                    
+                    // Display preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                    
+                    // Stop camera
+                    stopCamera();
+                    
+                    // Process the captured image
+                    processImage(file);
+                }, 'image/jpeg', 0.95);
+            }
+            
+            function handleFileUpload() {
+                if (fileInput.files.length === 0) return;
+                
+                const file = fileInput.files[0];
+                
+                // Check if file is an image
+                if (!file.type.match('image.*')) {
+                    showError('Please select an image file (PNG or JPEG)');
+                    return;
+                }
+                
+                // Display preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+                // Process the uploaded image
+                processImage(file);
+            }
+            
+            function processImage(file) {
+                // Show loading indicator
+                loading.style.display = 'block';
+                errorMessage.style.display = 'none';
+                resultsContainer.style.display = 'none';
+                recommendationsContainer.style.display = 'none';
+                
+                // Upload file to server
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.error || 'Error processing image');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Hide loading indicator
+                    loading.style.display = 'none';
+                    
+                    // Check if there's an error in the response
+                    if (data.error) {
+                        showError(data.error);
+                        return;
+                    }
+                    
+                    // Display results
+                    displayResults(data);
+                    resultsContainer.style.display = 'block';
+                    
+                    // Show clothing recommendations
+                    updateRecommendationSizes(data.sizes);
+                    recommendationsContainer.style.display = 'block';
+                    
+                    // Scroll to results
+                    resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    showError(error.message);
+                });
+            }
+            
+            function displayResults(data) {
+                // Display measurements
+                const measurements = data.measurements;
+                heightValue.textContent = measurements.height + ' cm';
+                shoulderValue.textContent = measurements.shoulder + ' cm';
+                chestValue.textContent = measurements.chest + ' cm';
+                waistValue.textContent = measurements.waist + ' cm';
+                hipsValue.textContent = measurements.hips + ' cm';
+                
+                // Display sizes
+                const sizes = data.sizes;
+                shirtSize.textContent = 'Shirt Size: ' + sizes.shirt;
+                pantsSize.textContent = 'Pants Size: ' + sizes.pants;
+            }
+            
+            function updateRecommendationSizes(sizes) {
+                // Update product sizes based on measurement results
+                tshirtSize.textContent = 'Size: ' + sizes.shirt;
+                greentshirtSize.textContent = 'Size: ' + sizes.shirt;
+                blacktshirtSize.textContent = 'Size: ' + sizes.shirt;
+                shirtFormalSize.textContent = 'Size: ' + sizes.shirt;
+                blueshirtFormalSize.textContent = 'Size: ' + sizes.shirt;
+                stripedshirtFormalSize.textContent = 'Size: ' + sizes.shirt;
+                poloSize.textContent = 'Size: ' + sizes.shirt;
+                hoodieSize.textContent = 'Size: ' + sizes.shirt;
+                redhoodieSize.textContent = 'Size: ' + sizes.shirt;
+                bluehoodieSize.textContent = 'Size: ' + sizes.shirt;
+                blackhoodieSize.textContent = 'Size: ' + sizes.shirt;
+                jeansSize.textContent = 'Size: ' + sizes.pants;
+                blackjeansSize.textContent = 'Size: ' + sizes.pants;
+                grayjeansSize.textContent = 'Size: ' + sizes.pants;
+                lightjeansSize.textContent = 'Size: ' + sizes.pants;
+                tshirtNavySize.textContent = 'Size: ' + sizes.shirt;
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
+
+
