@@ -3,8 +3,12 @@
 ## Overview
 The Body Measurement App with Recommendations processes user-provided images to extract body measurements and suggest clothing sizes. The results are presented to the user through a clear and intuitive interface, including numerical measurements, size recommendations, and a visual representation of the detected body landmarks.
 
-![Image of the web app](image_1.png)
-![image of the web app](image_3.png)
+
+![Image of the web app](image_3.png)
+
+![image of the web app](image_1.png)
+
+![image of the web app](image_2.png)
 
 ## Technical Stack
 
